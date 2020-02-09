@@ -1,0 +1,86 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>antani_concept</title>
+<!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"> -->
+<link rel="stylesheet" href="css/default.min.css">
+<link rel="stylesheet" href="css/modest.css">
+<link rel="stylesheet" type="text/css" media="print" href="css/print.css" />
+<link rel="stylesheet" type="text/css" href="css/markdown_custom.css" />
+<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script> -->
+
+<script src="js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script src='js/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script>
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = window.location.search.match(/print-pdf/gi) ? 'css/pdf.css' : 'css/modest.css';
+  document.getElementsByTagName('head')[0].appendChild(link);
+ </script>
+
+
+</head>
+<body>
+    
+    <!-- <a style="margin-left:0px;" class="navbar-brand" href="index.html"><img src="f/logo.png" alt=""></a> -->
+<h1 id="antani">antani</h1>
+<p>Ant - agent/network intelligence</p>
+<div class="figure">
+<img src="f_ops/antani_logo.svg" title="antani logo" alt="antani_logo" />
+<p class="caption">antani_logo</p>
+</div>
+<p><em>ants optimizing paths on a network</em> ## antani description</p>
+<p>Agent based optimization, first action: sense</p>
+<p><img src="f_ops/antani_sense.svg" title="antani sense" alt="antani_sense" /> <em>antani sense</em></p>
+<p>Occupy a spot</p>
+<p><img src="f_ops/antani_move.svg" title="antani move" alt="antani_move" /> <em>antani move</em></p>
+<p>Take an action</p>
+<p><img src="f_ops/antani_action.svg" title="antani carry" alt="antani_carry" /> <em>antani carry</em></p>
+<h1 id="theory">Theory</h1>
+<h2 id="gibbs-sampling">Gibbs sampling</h2>
+<p>We describe a probability distribution via its moments <span class="math inline"><em>μ⃗</em></span></p>
+<p><br /><span class="math display"><em>p</em>(<em>x⃗</em>; <em>μ⃗</em>)</span><br /></p>
+<p>We have a system <span class="math inline"><em>x⃗</em></span> where each <span class="math inline"><em>x</em></span> is in a certain state <span class="math inline"><em>s</em></span>. We define a energy function which depends on the states of system and a set of parameters <span class="math inline"><em>θ</em></span>. In our case the system is a series of field tasks on a map and the state is the agent who is fulfilling the task.</p>
+<p>The energy of the system is the sum of the revenue per task minus the cost: task time and path length. The parameter set <span class="math inline"><em>θ</em></span> defines the revenue and cost factor + external factors (temperature <span class="math inline"><em>T</em></span>, traffic time <span class="math inline"><em>h</em></span>,...). Ideally we will express the parameter set in terms of external factors <span class="math inline"><em>θ</em>(<em>T</em>, <em>h</em>)</span> or change the metric (distance) of the system <span class="math inline"><em>d</em>(<em>T</em>, <em>h</em>)</span></p>
+<p><br /><span class="math display"><em>E</em><sub><em>a</em></sub>(<em>x⃗</em>|<em>θ</em>)=<em>n</em><sub><em>s</em></sub> ⋅ <em>r</em><sub><em>s</em></sub> − <em>c</em><sub><em>d</em></sub> ⋅ <em>d</em><sub><em>a</em></sub> − <em>n</em><sub><em>s</em></sub> ⋅ <em>t</em><sub><em>s</em></sub></span><br /></p>
+<p>where <span class="math inline"><em>n</em><sub><em>s</em></sub></span> is the number of spots, <span class="math inline"><em>r</em><sub><em>s</em></sub></span> the total revenue per spot, <span class="math inline"><em>t</em><sub><em>s</em></sub></span> is the total operation time, <span class="math inline"><em>d</em><sub><em>a</em></sub></span> the distance of that agent.</p>
+<p>The probability distribution for a certain state and parameter follows the Boltzmann distribution</p>
+<p>$$ p(|) exp(-E()/kT)</p>
+<p>Target probability distribution</p>
+<p><br /><span class="math display">$$ p(\vec{x}) = \frac{w(\vec{x})}{Z} = \frac{1}{Z} \prod_c \phi_c(x)$$</span><br /></p>
+<p>estimator</p>
+<p><br /><span class="math display">$$ \frac{1}{T} \sum_{t=1}^{T} \phi(\vec{x}) \qquad E_{p(x)}|\phi(x)| = \sum_x p(x)\phi(x) $$</span><br /></p>
+<p>From the state <span class="math inline"><em>x⃗</em></span> we create a state <span class="math inline"><em>x⃗</em>′</span> where we create a sample <span class="math inline"><em>x</em><sub><em>j</em></sub> → <em>x</em><sub><em>j</em></sub>′</span>, basically: <span class="math inline"><em>x⃗</em>′=<em>x</em><sub>1</sub>, <em>x</em><sub>2</sub>, ..., <em>x</em><sub><em>j</em></sub>′,...,<em>x</em><sub><em>n</em></sub></span></p>
+<p><br /><span class="math display">$$ p(x) = \frac{exp(E(x)/T)}{Z} $$</span><br /></p>
+<p><br /><span class="math display">$$ A(x'|x) = min(1,p(x')/p(x)) = min(1,exp(\frac{ E(x') - E(x)}{T})) $$</span><br /></p>
+<h2 id="bayesian-statistics">Bayesian statistics</h2>
+<p>We want to calculate the posterior probability <a href="https://people.duke.edu/~ccc14/sta-663/MCMC.html">doc</a> which is the probability of a parameter set <span class="math inline"><em>θ</em></span> from a given state <span class="math inline"><em>X</em></span></p>
+<p><br /><span class="math display">$$ p(\theta|x) = \frac{l(x|\theta)p(\theta)}{p(x)} $$</span><br /></p>
+<p>where <span class="math inline"><em>l</em>(<em>x</em>|<em>θ</em>)</span> likelihood, <span class="math inline"><em>p</em>(<em>θ</em>)</span> prior, <span class="math inline"><em>p</em>(<em>x</em>′|<em>x</em>)</span> the probability to move from state <span class="math inline"><em>x</em></span> to state <span class="math inline"><em>x</em>′</span> and <span class="math inline"><em>p</em>(<em>X</em>)</span> normalization factor</p>
+<p><br /><span class="math display"><em>p</em>(<em>X</em>)=∫<em>d</em><em>θ</em> * <em>p</em>(<em>X</em>|<em>θ</em> * )<em>p</em>(<em>θ</em> * )</span><br /></p>
+<p>The likelihood is about finding the momenta of the distribution for a given data set (usually via regression), the probability distribution is the theoretical distribution for the system (independent on the data acquired). In a correct sampling the two match.</p>
+<p>proposal distribution <span class="math inline"><em>p</em>(<em>x</em>)</span> - target distribution <span class="math inline"><em>g</em>(<em>x</em>) <em>p</em>(<em>θ</em>|<em>X</em>)</span></p>
+<p>Step increment <span class="math inline"><em>θ</em>′=<em>θ</em> + <em>Δ</em><em>θ</em></span></p>
+<p><br /><span class="math display">$$\rho = \frac{g(\theta'|X)}{g(\theta|X)} \qquad \rho = \frac{p(X|\theta')p(\theta')}{p(X|\theta)p(\theta)}$$</span><br /></p>
+<p>sampling from probability from a state x <a href="http://www.stat.ucla.edu/~sczhu/Courses/UCLA/Stat_202C/lecture_note/Ch1_MC_Intro.pdf">doc</a></p>
+<p><br /><span class="math display"><em>x</em><em>π̃</em>(<em>x</em>)</span><br /></p>
+<p>High dimensional computing (over all states)</p>
+<p><br /><span class="math display"><em>c</em> = <em>E</em>[<em>f</em>(<em>x</em>)] = ∫<em>π</em>(<em>x</em>)<em>f</em>(<em>x</em>)<em>d</em><em>s</em></span><br /></p>
+<p>optimization</p>
+<p><br /><span class="math display"><em>x</em> * =<em>a</em><em>r</em><em>g</em><em>m</em><em>a</em><em>x</em><em>π</em>(<em>x</em>)</span><br /></p>
+<p>Learning and Bayesian hierarchical modeling for a given parameter set <span class="math inline"><em>Θ</em></span></p>
+<p><br /><span class="math display">$$ \Theta * = argmax l(\Theta) ; l(\Theta) = \sum_{i=1}^{n} log p(x_i;\Theta) $$</span><br /></p>
+</body></html>

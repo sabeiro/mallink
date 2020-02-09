@@ -1,0 +1,192 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>antani_infra</title>
+<!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"> -->
+<link rel="stylesheet" href="css/default.min.css">
+<link rel="stylesheet" href="css/modest.css">
+<link rel="stylesheet" type="text/css" media="print" href="css/print.css" />
+<link rel="stylesheet" type="text/css" href="css/markdown_custom.css" />
+<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script> -->
+
+<script src="js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script src='js/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script>
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = window.location.search.match(/print-pdf/gi) ? 'css/pdf.css' : 'css/modest.css';
+  document.getElementsByTagName('head')[0].appendChild(link);
+ </script>
+
+
+</head>
+<body>
+    
+    <!-- <a style="margin-left:0px;" class="navbar-brand" href="index.html"><img src="f/logo.png" alt=""></a> -->
+<h1 id="antani">antani</h1>
+<p>Ant - agent/network intelligence</p>
+<div class="figure">
+<img src="f_ops/antani_logo.svg" title="antani logo" alt="antani_logo" />
+<p class="caption">antani_logo</p>
+</div>
+<p><em>ants optimizing paths on a network</em></p>
+<div class="figure">
+<img src="f_ops/antani_concept.svg" title="antani concept" alt="antani_concept" />
+<p class="caption">antani_concept</p>
+</div>
+<p><em>antani concept schema</em></p>
+<h2 id="infra">infra</h2>
+<p>To deploy the engine we set up the hypervisor create and link different containers and check the routing and the services</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> yum -y install httpd php libapache2-mod-wsgi python-dev
+<span class="ex">...</span>
+<span class="fu">sudo</span> systemctl restart httpd.service
+<span class="ex">...</span>
+<span class="ex">docker</span> run -it --link redis1:redis --name <span class="va">$imgName</span> -p <span class="va">$PORT</span>:<span class="va">$PORT</span> -v <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>:/<span class="va">$APP_DIR</span> <span class="va">$imgName</span> bash
+<span class="ex">...</span>
+<span class="ex">curl</span> <span class="va">$SERVER</span>/antani
+<span class="ex">curl</span> <span class="va">$SERVER</span>/ant</code></pre></div>
+<p><img src="f_ops/antani_infra.svg" title="antani infra" alt="antani_infra" /> <em>deployment of antani</em></p>
+<h2 id="server-spec">server spec</h2>
+<pre><code>baseUrl : 10.0.49.178/antani</code></pre>
+<h3 id="endpoint">endpoint</h3>
+<p>Here is the list of end points and methods</p>
+<ul>
+<li><code>/</code> - post/get: checking the server</li>
+<li><code>/conf</code> - post: change configuration</li>
+<li><code>/longtask</code> - post: start the long process</li>
+<li><code>/status</code> - get: current status of the process/worker</li>
+<li><code>/solve</code> post: start worker and returns <code>job_id</code> (routific format)</li>
+<li><code>/jobs</code> - get: returns status/solution (routific format)</li>
+<li><code>/publish</code> - get: solution is published (after manual inspection)</li>
+<li><code>/simplify</code> - post: simplify the route</li>
+<li><code>/process</code> - get: start serial routine</li>
+<li><code>/solution</code> - get: return published solution</li>
+</ul>
+<p>To try out:</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">curl</span> http://<span class="va">$URL</span>/antani/simplify -d @src/ui/antani_viz/data/sol_routific.json --header <span class="st">&quot;Content-Type: application/json&quot;</span>
+<span class="ex">curl</span> http://<span class="va">$URL</span>/antani/solution --header <span class="st">&quot;Content-Type: application/json&quot;</span>
+<span class="ex">curl</span> http://<span class="va">$URL</span>/antani/solve -d @raw/opt/job_winter.json --header <span class="st">&quot;Content-Type: application/json&quot;</span></code></pre></div>
+<h2 id="frontend">frontend</h2>
+<p>To visualize and edit the solution we have created a <a href="http://localhost/antani_viz/">frontend</a></p>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript">    <span class="va">$</span>.<span class="at">ajax</span>(<span class="op">{</span>
+        <span class="dt">type</span><span class="op">:</span> <span class="st">&quot;POST&quot;</span><span class="op">,</span>
+        <span class="dt">url</span><span class="op">:</span> url<span class="op">,</span>
+        <span class="dt">data</span><span class="op">:</span> <span class="va">JSON</span>.<span class="at">stringify</span>(data)<span class="op">,</span>
+    <span class="dt">contentType</span><span class="op">:</span><span class="st">&quot;application/json&quot;</span><span class="op">,</span>
+    <span class="dt">success</span><span class="op">:</span> <span class="kw">function</span>(json) <span class="op">{</span>
+        <span class="va">console</span>.<span class="at">log</span>(json)<span class="op">;</span>
+        <span class="cf">if</span>(<span class="va">Object</span>.<span class="at">keys</span>(geom).<span class="at">length</span> <span class="op">!==</span> <span class="dv">0</span>)<span class="op">{</span>
+        sol <span class="op">=</span> json<span class="op">;</span>
+        geom <span class="op">=</span> <span class="at">formatData</span>(sol)<span class="op">;</span>
+        spotL <span class="op">=</span> <span class="va">geom</span>.<span class="at">spotL</span><span class="op">;</span>
+        pathL <span class="op">=</span> <span class="va">geom</span>.<span class="at">pathL</span><span class="op">;</span>
+        <span class="at">refreshLayer</span>(spotL)<span class="op">;</span>
+        <span class="op">}</span>
+    <span class="op">},</span>
+    <span class="dt">error</span><span class="op">:</span> <span class="kw">function</span>(xhr<span class="op">,</span> status<span class="op">,</span> error) <span class="op">{</span><span class="va">console</span>.<span class="at">log</span>(status <span class="op">+</span> <span class="st">&#39;; &#39;</span> <span class="op">+</span> error)<span class="op">;}</span>
+    <span class="op">}</span>)<span class="op">;</span></code></pre></div>
+<iframe id="frame_map" width="100%" height="600" src="http:/localhost/doc/antani_viz/">
+</iframe>
+<h2 id="redirect">redirect</h2>
+<p>To avoid the browser to stop requests we have to redirect the calls on the server or client side</p>
+<p><code>Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource</code></p>
+<p>The jsonp options requires a lot of reingeneering and we opt for the apache solution. After a lot of trial and errors the only option working for ubuntu and centos is a proxy:</p>
+<pre><code>ProxyRequests Off
+ProxyPass /antani http://localhost:5000
+ProxyPassReverse /antani http://localhost:5000</code></pre>
+<h2 id="backend">backend</h2>
+<p>We create a flask app</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">app <span class="op">=</span> Flask(<span class="va">__name__</span>)</code></pre></div>
+<p>Where we can send the modified json</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="at">@app.route</span>(<span class="st">&#39;/simplify&#39;</span>,methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])
+<span class="kw">def</span> route_simplify():
+   <span class="bu">print</span>(<span class="st">&quot;parsing/converting solution&quot;</span>)
+   sol <span class="op">=</span> request.get_json()
+   spotL, pathL <span class="op">=</span> dict2frame(sol)
+   pO <span class="op">=</span> p_o.pathOpt(spotL,pathL<span class="op">=</span>pathL,conf<span class="op">=</span>conf)
+   <span class="bu">print</span>(<span class="st">&quot;simplify - calc distances&quot;</span>)
+   spotL1 <span class="op">=</span> pO.simplifyRoute(spotL)
+   pathL1 <span class="op">=</span> pO.calcDistance()
+   solD[<span class="st">&#39;solution&#39;</span>] <span class="op">=</span> frame2dict(spotL1,pathL1)
+   <span class="cf">return</span> <span class="st">&#39;&#39;</span>, <span class="dv">204</span></code></pre></div>
+<p>and request the optimized solution</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="at">@app.route</span>(<span class="st">&#39;/solution&#39;</span>)
+<span class="kw">def</span> get_solution():
+   <span class="cf">return</span> jsonify(solD[<span class="st">&#39;solution&#39;</span>])</code></pre></div>
+<p>Which can be called via a <a href="http://10.0.49.178/antani/solution/">get request</a></p>
+<h2 id="async">async</h2>
+<p>We create a celery</p>
+<div class="figure">
+<img src="f_ops/help_kill.png" title="help kill" alt="help_kill" />
+<p class="caption">help_kill</p>
+</div>
+<p><em>forum tips for killing</em></p>
+<h2 id="data-structure">data structure</h2>
+<p>To complete the loop between optEn, backend and frontend we suggest the following data structure</p>
+<div class="figure">
+<img src="f_ops/data_structure.png" title="data structure" alt="data_structure" />
+<p class="caption">data_structure</p>
+</div>
+<p><em>data structure</em></p>
+<h2 id="awsproductization">aws/productization</h2>
+<p>The solution is written on a s3 bucket</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">    json.dump_s3 <span class="op">=</span> <span class="kw">lambda</span> obj, f: s3.Object(key<span class="op">=</span>f).put(<span class="bu">bytes</span>(json.dumps(obj).encode(<span class="st">&#39;UTF-8&#39;</span>)))
+    json.dump_s3(solJ,jobN)</code></pre></div>
+<p>The lambda reads the solution from s3 and returns it</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">    json.load_s3 <span class="op">=</span> <span class="kw">lambda</span> f: json.load(s3.Object(key<span class="op">=</span>f).get()[<span class="st">&quot;Body&quot;</span>])
+    post <span class="op">=</span> json.load_s3(jobN)
+    <span class="cf">return</span> {
+        <span class="st">&#39;statusCode&#39;</span>: <span class="dv">200</span>,
+        <span class="st">&#39;body&#39;</span>: json.dumps(post)
+    }</code></pre></div>
+<p>We create a lambda and connect it with the api gateway</p>
+<div class="figure">
+<img src="f_ops/lambda_api.png" title="lambda api" alt="lambda_api" />
+<p class="caption">lambda_api</p>
+</div>
+<p><em>lambda and api gateway</em></p>
+<p>and we created the resources and methods for enabling the call</p>
+<div class="figure">
+<img src="f_ops/api_gateway.png" title="api gateway" alt="api_gateway" />
+<p class="caption">api_gateway</p>
+</div>
+<p><em>api gateway</em></p>
+<p>We stardadize the script</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="va">APP_NAME=</span><span class="st">&quot;antani_solution&quot;</span>
+<span class="va">BUCKET=</span><span class="st">&quot;-------------&quot;</span>
+<span class="va">ARN_ROLE=</span><span class="st">&quot;------------&quot;</span>
+<span class="va">RESOURCE=</span><span class="st">&quot;solution&quot;</span>
+<span class="va">REGION=</span><span class="st">&quot;eu-central-1&quot;</span>
+<span class="va">ACCOUNT=</span><span class="st">&quot;------------&quot;</span>
+<span class="va">LAMBDA_LINK=</span><span class="st">&quot;arn:aws:lambda:</span><span class="va">${REGION}</span><span class="st">:</span><span class="va">${ACCOUNT}</span><span class="st">:function:</span><span class="va">${APP_NAME}</span><span class="st">/</span><span class="va">$RESOURCE</span><span class="st">&quot;</span>
+<span class="va">LAMBDA_URI=</span><span class="st">&quot;arn:aws:apigateway:</span><span class="va">$REGION</span><span class="st">:lambda:path/2015-03-31/functions/arn:</span><span class="va">$LAMBDA_URI</span><span class="st">&quot;</span>
+<span class="va">ARN_SOURCE=</span><span class="st">&quot;arn:aws:execute-api:</span><span class="va">$REGION</span><span class="st">:</span><span class="va">$ACCOUNT</span><span class="st">:</span><span class="va">$API</span><span class="st">/prod/POST/</span><span class="va">$RESOURCE</span><span class="st">&quot;</span>
+<span class="co">#---------------------------------create-lambda---------------------------------</span>
+<span class="fu">zip</span> package.zip antani_lambda.py
+<span class="ex">aws</span> lambda create-function --function-name <span class="va">$APP_NAME</span> --zip-file fileb://package.zip --role <span class="va">$ARN_ROLE</span> --environment Variables=<span class="st">&quot;{bucket_name=&quot;</span><span class="va">$BUCKET</span><span class="st">&quot;}&quot;</span> --handler index.handler --runtime python3.6
+<span class="co">#--------------------------------test-lambda-----------------------------------</span>
+<span class="bu">echo</span> <span class="st">&#39;{&quot;jobN&quot;:&quot;job_s592_v9_sol.json&quot;}&#39;</span> <span class="op">&gt;</span> post.json
+<span class="ex">aws</span> lambda  invoke --function-name <span class="va">$APP_NAME</span> --payload fileb://post.json outputfile.json
+<span class="co">#----------------------create-api------------------------------------</span>
+<span class="ex">aws</span> apigateway create-rest-api --name <span class="va">$APP_NAME</span> <span class="op">&gt;</span> <span class="va">$APP_NAME</span>.create.log</code></pre></div>
+<p>We can than perform a post request and test it</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">curl</span> -v -X POST \
+  <span class="st">&#39;https://-------------.execute-api.eu-central-1.amazonaws.com/antani/solution/&#39;</span> \
+  -H <span class="st">&#39;content-type: application/json&#39;</span> \
+  -H <span class="st">&#39;x-amz-docs-region: eu-central-1&#39;</span> \
+  -d <span class="st">&#39;{&quot;jobN&quot;:&quot;job_s592_v9_sol.json&quot;}&#39;</span> <span class="op">&gt;</span> sol.json</code></pre></div>
+<p>moving to <a href="https://chalice.readthedocs.io/en/latest/">chalice</a>.</p>
+</body></html>

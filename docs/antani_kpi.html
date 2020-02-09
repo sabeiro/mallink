@@ -1,0 +1,85 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>antani_kpi</title>
+<!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"> -->
+<link rel="stylesheet" href="css/default.min.css">
+<link rel="stylesheet" href="css/modest.css">
+<link rel="stylesheet" type="text/css" media="print" href="css/print.css" />
+<link rel="stylesheet" type="text/css" href="css/markdown_custom.css" />
+<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script> -->
+
+<script src="js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script src='js/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script>
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = window.location.search.match(/print-pdf/gi) ? 'css/pdf.css' : 'css/modest.css';
+  document.getElementsByTagName('head')[0].appendChild(link);
+ </script>
+
+
+</head>
+<body>
+    
+    <!-- <a style="margin-left:0px;" class="navbar-brand" href="index.html"><img src="f/logo.png" alt=""></a> -->
+<h1 id="optimization-engine-comparison">optimization engine comparison</h1>
+<p>An optimization engine find the best combination for assigning tasks to a fleet. To compare performances we create a set up of around 600 spots, 6 task types (with different priorities) and a fleet of 8 drivers</p>
+<p><img src="f_ops/comp_setup.png" title="comp setup" alt="setup" /> <em>set up for the comparison</em></p>
+<p>We prepare the job file and we send it to the routific api service and <a href="http://routific-viewer.herokuapp.com/jobs/k24ozyff68">visualize the solution</a></p>
+<div class="figure">
+<img src="f_ops/routific.png" title="routific" alt="routific" />
+<p class="caption">routific</p>
+</div>
+<p><em>routific solution explorer</em></p>
+<h1 id="optimization-engine">optimization engine</h1>
+<p>We can run the optimization engine from a blank system or after a routific solution.</p>
+<div class="figure">
+<img src="f_ops/route_engine.png" title="route engine" alt="route engine" />
+<p class="caption">route engine</p>
+</div>
+<p><em>comparison between routing engine</em></p>
+<p>Starting from a routific solution we see that the optimization engine at first improves big springs</p>
+<div class="figure">
+<img src="f_ops/prob_2.png" title="routific evaluation" alt="routific_evaluation" />
+<p class="caption">routific_evaluation</p>
+</div>
+<p><em>optimization improves big springs</em></p>
+<p>We use the following kpi:</p>
+<ul>
+<li><code>completion</code>: percentage of van capacity filled</li>
+<li><code>duration</code>: time spent</li>
+<li><code>potential</code>: value of the van</li>
+<li><code>distance</code>: distance of the route</li>
+</ul>
+<p>The score is calculated via:</p>
+<p><br /><span class="math display">$$ score = \frac{occupancy * potential}{duration * distance} $$</span><br /></p>
+<div class="figure">
+<img src="f_ops/kpi_comparison.png" title="kpi comparison" alt="kpi comparison" />
+<p class="caption">kpi comparison</p>
+</div>
+<p><em>comparison of kpi between engines</em></p>
+<!-- If we consider routed distances the figure change -->
+<!-- ![kpi comparison routed](f_ops/kpi_compRouted.png "kpi comparison routed") -->
+<!-- _comparison of kpi between engines using routed distances_ -->
+<h1 id="run-time">run time</h1>
+<p>Routific was sending a complete solution within 3 minutes, the optimization engine was sending a better solution in 30 minutes, to speed up the process we introduced new moves</p>
+<div class="figure">
+<img src="f_ops/execution_time.png" title="execution time" alt="execution time" />
+<p class="caption">execution time</p>
+</div>
+<p><em>execution time</em></p>
+</body></html>

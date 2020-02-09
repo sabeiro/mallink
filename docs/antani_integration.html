@@ -1,0 +1,97 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>antani_integration</title>
+<!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"> -->
+<link rel="stylesheet" href="css/default.min.css">
+<link rel="stylesheet" href="css/modest.css">
+<link rel="stylesheet" type="text/css" media="print" href="css/print.css" />
+<link rel="stylesheet" type="text/css" href="css/markdown_custom.css" />
+<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script> -->
+
+<script src="js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script src='js/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script>
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = window.location.search.match(/print-pdf/gi) ? 'css/pdf.css' : 'css/modest.css';
+  document.getElementsByTagName('head')[0].appendChild(link);
+ </script>
+
+
+</head>
+<body>
+    
+    <!-- <a style="margin-left:0px;" class="navbar-brand" href="index.html"><img src="f/logo.png" alt=""></a> -->
+<h1 id="antani">antani</h1>
+<p>Ant - agent/network intelligence</p>
+<div class="figure">
+<img src="f_ops/antani_logo.svg" title="antani logo" alt="antani_logo" />
+<p class="caption">antani_logo</p>
+</div>
+<p><em>ants optimizing paths on a network</em></p>
+<h2 id="workflow">workflow</h2>
+<p>The optimization engine has user controlled and automated modules</p>
+<div class="figure">
+<img src="f_ops/ops_app.svg" title="ops_app" alt="ops_app" />
+<p class="caption">ops_app</p>
+</div>
+<p><em>ops application</em></p>
+<p>We retrieve information directly from the fleet console microservices</p>
+<div class="figure">
+<img src="f_ops/management_console.png" title="man console" alt="man_console" />
+<p class="caption">man_console</p>
+</div>
+<p><em>management console</em></p>
+<p>We collect the current status with a single api call</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">resq <span class="op">=</span> requests.get(url<span class="op">=</span>cred[<span class="st">&#39;node_url&#39;</span>]<span class="op">+</span><span class="st">&quot;/users/actions/&quot;</span>,headers<span class="op">=</span>headers)
+resq <span class="op">=</span> requests.get(url<span class="op">=</span>cred[<span class="st">&#39;node_url&#39;</span>]<span class="op">+</span><span class="st">&quot;/geodata/zones/&quot;</span>,headers<span class="op">=</span>headers)
+resq <span class="op">=</span> requests.get(url<span class="op">=</span>cred[<span class="st">&#39;node_url&#39;</span>]<span class="op">+</span><span class="st">&quot;/geodata/zones/&quot;</span><span class="op">+</span>id_zone<span class="op">+</span><span class="st">&quot;/areas&quot;</span>,headers<span class="op">=</span>headers)
+resq <span class="op">=</span> requests.get(url<span class="op">=</span>cred[<span class="st">&#39;node_url&#39;</span>]<span class="op">+</span><span class="st">&quot;/geodata/areas/deployment/zone&quot;</span>,headers<span class="op">=</span>headers,params<span class="op">=</span>{<span class="st">&quot;zoneIdentifier&quot;</span>:g[<span class="st">&#39;zoneIdentifier&#39;</span>]})</code></pre></div>
+<p>The fleet engine sits in the middle and steers all operations, tracking and monitoring log the current status</p>
+<div class="figure">
+<img src="f_ops/obj_dev.svg" title="obj_dev" alt="obj_dev" />
+<p class="caption">obj_dev</p>
+</div>
+<p><em>development of objectives</em></p>
+<p>In the fleet engine 4 objects will be defined with an hierarchical structure</p>
+<div class="figure">
+<img src="f_ops/metric_ops.svg" title="metric_ops" alt="metric_ops" />
+<p class="caption">metric_ops</p>
+</div>
+<p><em>metric operations</em></p>
+<p>The purpose of the optimization engine is to compute profitability for each drive and iterate all over the possible solutions</p>
+<div class="figure">
+<img src="f_ops/task_preparation.svg" title="task preparation" alt="task preparation" />
+<p class="caption">task preparation</p>
+</div>
+<p><em>field operation assignement</em></p>
+<p>For each <em>drive</em> is calculated a cost and a rating</p>
+<p>For Each <em>task</em> is calculated a revenue and a risk</p>
+<!-- To enable parallel work we need to move from a graph design -->
+<!-- ![engine_design_old](f_ops/engine_design_old.svg "engine design") -->
+<!-- _engine design, current scheme_ -->
+<!-- To a linear design where the engine just orchestrate the calls and there is always a cached table to substitute a broken service -->
+<!-- ![engine_design](f_ops/engine_design.svg "engine design") -->
+<!-- _engine design, suggested scheme_ -->
+<h2 id="design">design</h2>
+<p>To enable parallel work we need to move from a graph design</p>
+<p><img src="f_ops/engine_design_old.svg" title="engine design" alt="engine_design_old" /> <em>engine design, current scheme</em></p>
+<p>To a linear design where the engine just orchestrate the calls and there is always a cached table to substitute a broken service</p>
+<p><img src="f_ops/engine_design.svg" title="engine design" alt="engine_design" /> <em>engine design, suggested scheme</em></p>
+<p>We draw a cut between field operation and task optimization</p>
+<p><img src="f_ops/infra_design.svg" title="infra design" alt="infra_design" /> <em>infra design</em></p>
+</body></html>

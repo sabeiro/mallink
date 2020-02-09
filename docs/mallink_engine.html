@@ -1,0 +1,190 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>mallink_engine</title>
+<!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"> -->
+<link rel="stylesheet" href="css/default.min.css">
+<link rel="stylesheet" href="css/modest.css">
+<link rel="stylesheet" type="text/css" media="print" href="css/print.css" />
+<link rel="stylesheet" type="text/css" href="css/markdown_custom.css" />
+<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script> -->
+
+<script src="js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script src='js/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script>
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = window.location.search.match(/print-pdf/gi) ? 'css/pdf.css' : 'css/modest.css';
+  document.getElementsByTagName('head')[0].appendChild(link);
+ </script>
+
+
+</head>
+<body>
+    
+    <!-- <a style="margin-left:0px;" class="navbar-brand" href="index.html"><img src="f/logo.png" alt=""></a> -->
+<h1 id="optimization">Optimization</h1>
+<p>Optimization is finding one optimal configuration for a given system</p>
+<p><img src="f_ops/vid_8.gif" title="opt_8" alt="optimization_8" /> <em>optimization 8 vans</em></p>
+<h1 id="optimization-task">optimization task</h1>
+<p>We have to find the most efficient distribution tasks among drivers to minimize costs and maximize revenue</p>
+<div class="figure">
+<img src="f_ops/optimization_engine.svg" title="optimization engine" alt="optimization_engine" />
+<p class="caption">optimization_engine</p>
+</div>
+<p><em>optimization problem</em></p>
+<h2 id="optmimization-engine">optmimization engine</h2>
+<p>We need to reduce the drive time and focus on most interesting spots</p>
+<!-- <video controls><source src="f_ops/linea.mp4"></video> -->
+<!-- _optimization procedure_ -->
+<h3 id="routing-efficiency">routing efficiency</h3>
+<p>We first add all the spots a van could see and we calculate the most optimal route connecting the spots</p>
+<div class="figure">
+<img src="f_ops/spot_connection.png" title="spot connection" alt="spot_connection" />
+<p class="caption">spot_connection</p>
+</div>
+<p><em>spot connection</em></p>
+<h3 id="spot-prioritization">spot prioritization</h3>
+<p>Prediction should define the layers where we are most confident about the revenues for a given time and weather condition</p>
+<p>We define the revenue as:</p>
+<div class="figure">
+<img src="f_act/map_pot.png" title="map potential" alt="map_pot" />
+<p class="caption">map_pot</p>
+</div>
+<p><em>potential of that area for a given weekday and shift number</em></p>
+<p><br /><span class="math display"><em>μ</em><sub><em>d</em><em>e</em><em>p</em><em>l</em><em>o</em><em>y</em></sub><em>n</em><sub><em>d</em><em>e</em><em>p</em><em>l</em><em>o</em><em>y</em></sub><em>E</em><sub><em>d</em><em>e</em><em>p</em><em>l</em><em>o</em><em>y</em></sub> + <em>μ</em><sub><em>c</em><em>o</em><em>l</em><em>l</em><em>e</em><em>c</em><em>t</em></sub><em>n</em><sub><em>c</em><em>o</em><em>l</em><em>l</em><em>e</em><em>c</em><em>t</em></sub><em>E</em><sub><em>c</em><em>o</em><em>l</em><em>l</em><em>e</em><em>c</em><em>t</em></sub></span><br /></p>
+<p>Where <span class="math inline"><em>μ</em></span> is the potential to add or remove a scooter at a certain spot, <span class="math inline"><em>E</em></span> is the revenue per scooter, <span class="math inline"><em>n</em></span> is the number of scooters</p>
+<p>and the costs as:</p>
+<p><br /><span class="math display"><em>l</em><sub><em>r</em><em>i</em><em>d</em><em>e</em></sub><em>c</em><sub><em>l</em><em>e</em><em>n</em><em>g</em><em>h</em><em>t</em></sub> + <em>n</em><sub><em>s</em><em>t</em><em>o</em><em>p</em><em>s</em></sub><em>c</em><sub><em>s</em><em>t</em><em>o</em><em>p</em><em>s</em></sub></span><br /></p>
+<p>Where <span class="math inline"><em>l</em></span> is the lenght, <span class="math inline"><em>n</em></span> the number of stops and <span class="math inline"><em>c</em></span> empirical parameters.</p>
+<h3 id="solve-problem">solve problem</h3>
+<p>We can toggle the activation of the spot and recalculate the energy and apply the Metropolis algorithm to see whether the move is convenient</p>
+<div class="figure">
+<img src="f_ops/opt_graph.png" title="opt graph" alt="opt_graph" />
+<p class="caption">opt_graph</p>
+</div>
+<p><em>optimization graph</em></p>
+<p>The total energy of the system decreses</p>
+<div class="figure">
+<img src="f_ops/nrg_small.png" title="opt nrg" alt="opt_nrg" />
+<p class="caption">opt_nrg</p>
+</div>
+<p><em>optimization energy</em></p>
+<p>We consider a larger system</p>
+<div class="figure">
+<img src="f_ops/opt_large.png" title="opt nrg" alt="opt_nrg" />
+<p class="caption">opt_nrg</p>
+</div>
+<p><em>larger system</em></p>
+<p>But after many iteration steps the solution is slowly approaching</p>
+<div class="figure">
+<img src="f_ops/nrg_blank.png" title="opt nrg" alt="opt_nrg" />
+<p class="caption">opt_nrg</p>
+</div>
+<p><em>optimization energy, slowly learning</em></p>
+<h1 id="markov-chain">Markov chain</h1>
+<p>To improve the acceptance rate of moves we introduce Markov Chains</p>
+<div class="figure">
+<img src="f_ops/markov_schema.svg" title="markov schema" alt="markov_schema" />
+<p class="caption">markov_schema</p>
+</div>
+<p><em>Markov schema</em></p>
+<p>We multiply the Markov chain matrix with itself to condense iteration probabilities and set up a threshold to consider only the most important links</p>
+<p>We calcualte at first a really dense Markov chain (first power) and we increase the power (until five) to have a sparse Markov chain</p>
+<div class="figure">
+<img src="f_ops/markov_dens.png" title="markov 1" alt="markov_chain" />
+<p class="caption">markov_chain</p>
+</div>
+<p><em>Markov chain densities</em></p>
+<p>We than use a sparse Markov chain with around 7 links per node</p>
+<div class="figure">
+<img src="f_ops/markov_3.png" title="markov 1" alt="markov_chain" />
+<p class="caption">markov_chain</p>
+</div>
+<p><em>sparse markov chain</em></p>
+<p>From the Markov chain we create a cumulative probability which is getting simpler while increasing the number of iterations</p>
+<div class="figure">
+<img src="f_ops/cumulative_prob.png" title="cumulative probability" alt="cumulative probability" />
+<p class="caption">cumulative probability</p>
+</div>
+<p><em>cumulative probability on filtering</em></p>
+<h2 id="iterating-to-the-solution">iterating to the solution</h2>
+<p>We run over 500 spots and 8 drivers</p>
+<p><img src="f_ops/vid_8.gif" title="opt_8" alt="optimization_8" /> <em>optimization 8 vans</em></p>
+<p>and iterate over different solutions</p>
+<div class="figure">
+<img src="f_ops/vid_8a.gif" title="opt_8" alt="optimization_8" />
+<p class="caption">optimization_8</p>
+</div>
+<p><em>optimization 8 vans</em></p>
+<p>We can control the energy evolution and check the aymptotic behaviour of the curves.</p>
+<div class="figure">
+<img src="f_ops/nrg_benchmark.png" title="nrg_8" alt="nrg_8" />
+<p class="caption">nrg_8</p>
+</div>
+<p><em>energy history with 8 vans</em></p>
+<h1 id="single-task-move">single task move</h1>
+<p>The engine was at first focusing on single task move which was making convergency pretty slow. We started than introducing new moves and initial set up</p>
+<div class="figure">
+<img src="f_ops/vid_blank.gif" title="single spot move" alt="single spot move" />
+<p class="caption">single spot move</p>
+</div>
+<p><em>single spot move, solutions are a bit crowded</em></p>
+<p>each driver start from a different k-mean cluster</p>
+<div class="figure">
+<img src="f_ops/start_cluster.png" title="start clustering" alt="start_clustering" />
+<p class="caption">start_clustering</p>
+</div>
+<p><em>distribution of the closest spot to a cluster</em></p>
+<p>We have than a better separation of routes</p>
+<div class="figure">
+<img src="f_ops/vid_newMarkov.gif" title="single markov" alt="single spot move" />
+<p class="caption">single spot move</p>
+</div>
+<p><em>single markov chain</em></p>
+<div class="figure">
+<img src="f_ops/nrg_blank.png" title="single move energy" alt="single move energy" />
+<p class="caption">single move energy</p>
+</div>
+<p><em>energy evolution for single move engine</em></p>
+<h2 id="extrude-phantom-canonical">extrude, phantom, canonical</h2>
+<p>For speeding up operations we introduce a series of moves to improve run time and convergency.</p>
+<p><em>Extruding</em> is suggesting a chain following the Markov Chain probability</p>
+<div class="figure">
+<img src="f_ops/vid_extrude.gif" title="extrude move" alt="extrude move" />
+<p class="caption">extrude move</p>
+</div>
+<p><em>extrude move</em></p>
+<p>With extrusion we dicrease calculation time to 1/10 getting to the same run time as routific.</p>
+<p>We realize that sometimes some routes get trapped in a local minimum and we can't get complete the occupancy of the van. Therefore we introduce <em>phantom</em> drivers so we have the option to discard uncomplete runs</p>
+<div class="figure">
+<img src="f_ops/vid_phantom.gif" title="phantom move" alt="phantom move" />
+<p class="caption">phantom move</p>
+</div>
+<p><em>phantom move</em></p>
+<p>Depending on the stage of the solution certain solutions are more appropriate than others</p>
+<div class="figure">
+<img src="f_ops/nrg_grand.png" title="energy canonical" alt="nrg_canonical" />
+<p class="caption">nrg_canonical</p>
+</div>
+<p><em>energy distribution for canonical simulations</em></p>
+<p>To further improve convergence of solution we move to <em>gran canonical</em> simulation where we continously introduce and remove routes until we get to the best complete solution</p>
+<div class="figure">
+<img src="f_ops/vid_canonical_trap.gif" title="canonical move" alt="canonical move" />
+<p class="caption">canonical move</p>
+</div>
+<p><em>canonical move</em></p>
+</body></html>
